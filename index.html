@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《家》- 我的连环画故事</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "Microsoft YaHei", sans-serif;
+  background: linear-gradient(135deg, #FFF9E6 0%, #FFE5CC 50%, #FFD6B3 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+/* 标题 */
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.title h1 {
+  font-size: 36px;
+  color: #D35400;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 5px;
+}
+
+.title p {
+  font-size: 16px;
+  color: #888;
+}
+
+/* 书本容器 */
+.book {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+  padding: 30px;
+  max-width: 700px;
+  width: 100%;
+}
+
+/* 页码 */
+.page-number {
+  text-align: center;
+  font-size: 18px;
+  color: #E67E22;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+/* 图片区域 */
+.picture {
+  background: #FFF5E6;
+  border: 4px solid #F5CBA7;
+  border-radius: 15px;
+  height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.picture img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* 文字区域 */
+.story-text {
+  background: #FEF9E7;
+  border-left: 5px solid #F39C12;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  min-height: 100px;
+}
+
+.story-text p {
+  font-size: 20px;
+  line-height: 1.8;
+  color: #333;
+}
+
+/* 翻页按钮区 */
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.btn {
+  padding: 15px 35px;
+  font-size: 18px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.btn-prev {
+  background: #3498DB;
+  color: white;
+}
+
+.btn-next {
+  background: #E67E22;
+  color: white;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 页码指示器 */
+.page-dots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ddd;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dot.active {
+  background: #E67E22;
+  transform: scale(1.3);
+}
+
+/* 装饰 */
+.decoration {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 30px;
+  letter-spacing: 10px;
+}
+</style>
+</head>
+<body>
+
+<div class="title">
+  <h1>📖 《家》</h1>
+  <p>一个温暖的小故事</p>
+</div>
+
+<div class="book">
+  <div class="page-number">第 <span id="currentPage">1</span> 页 / 共 10 页</div>
+  
+  <div class="picture">
+    <img id="pageImage" src="images/page-01.jpg" alt="插图">
+  </div>
+  
+  <div class="story-text">
+    <p id="pageText"></p>
+  </div>
+  
+  <div class="nav-buttons">
+    <button class="btn btn-prev" onclick="prevPage()">◀ 上一页</button>
+    
+    <div class="page-dots" id="dots"></div>
+    
+    <button class="btn btn-next" onclick="nextPage()">下一页 ▶</button>
+  </div>
+</div>
+
+<div class="decoration">🏠 💕 🌟</div>
+
+<script>
+// 故事内容
+var stories = [
+  "我的爸爸妈妈是超市老板，每天用心打理自己的小超市。",
+  "超市里摆满好吃好用的东西，都是爸爸妈妈精心挑选的。",
+  "爸爸负责算账、整理货架，做事认真又靠谱。",
+  "妈妈热情招待客人，把超市收拾得干净又温馨。",
+  "虽然看超市很忙，但他们从来不会忽略我和侄女。",
+  "空闲时，爸爸妈妈会陪我们一起玩游戏、讲故事。",
+  "我们一家人经常一起吃饭、聊天，日子平凡又开心。",
+  "爸爸妈妈很爱我们，也把小日子过得特别有乐趣。",
+  "我喜欢爸爸妈妈开的超市，更喜欢相亲相爱的一家人。",
+  "这就是我幸福温暖、充满生活趣味的家。"
+];
+
+var currentPage = 1;
+var totalPages = 10;
+
+function showPage(page) {
+  // 更新页码
+  document.getElementById('currentPage').textContent = page;
+  
+  // 更新图片
+  var pageNum = page < 10 ? '0' + page : page;
+  document.getElementById('pageImage').src = 'images/page-' + pageNum + '.jpg';
+  
+  // 更新文字
+  document.getElementById('pageText').textContent = stories[page - 1];
+  
+  // 更新按钮状态
+  document.querySelector('.btn-prev').disabled = (page === 1);
+  document.querySelector('.btn-next').disabled = (page === 10);
+  
+  // 更新圆点
+  updateDots(page);
+}
+
+function prevPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    showPage(currentPage);
+  }
+}
+
+function nextPage() {
+  if (currentPage < totalPages) {
+    currentPage++;
+    showPage(currentPage);
+  }
+}
+
+function goToPage(page) {
+  currentPage = page;
+  showPage(currentPage);
+}
+
+function updateDots(activePage) {
+  var dotsContainer = document.getElementById('dots');
+  dotsContainer.innerHTML = '';
+  for (var i = 1; i <= totalPages; i++) {
+    var dot = document.createElement('div');
+    dot.className = 'dot' + (i === activePage ? ' active' : '');
+    dot.onclick = (function(p) {
+      return function() { goToPage(p); };
+    })(i);
+    dotsContainer.appendChild(dot);
+  }
+}
+
+// 键盘翻页
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowLeft') prevPage();
+  if (e.key === 'ArrowRight') nextPage();
+});
+
+// 初始化
+showPage(1);
+</script>
+
+</body>
+</html>
