@@ -161,23 +161,6 @@ body {
 </head>
 <body>
 
-<script>
-// 检测是否在微信内置浏览器
-const isWeChat = /MicroMessenger/i.test(navigator.userAgent);
-if (isWeChat) {
-  document.body.innerHTML = `
-  <div style="padding: 2rem; text-align: center; font-size: 1.2rem; background: linear-gradient(135deg, #FFF9E6 0%, #FFE5CC 100%); min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-  <h3 style="color: #D35400; margin-bottom: 1rem;">📖 《家》</h3>
-  <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
-  <p style="color: #666; margin-bottom: 1rem;">请点击右上角 <strong>···</strong></p>
-  <p style="color: #666; margin-bottom: 1rem;">选择 <strong style="color: #E67E22;">「在浏览器打开」</strong></p>
-  <p style="color: #888; font-size: 0.9rem;">即可正常观看连环画</p>
-  </div>
-  </div>
-  `;
-}
-</script>
-
 <div class="title">
   <h1>📖 《家》</h1>
   <p>一个温暖的小故事</p>
